@@ -1,0 +1,21 @@
+# Compiled files
+*.o
+*.so
+*.a
+*.exe
+
+# Build directories
+build/
+bin/
+dist/
+
+# IDE
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Output files
+*.out
+
