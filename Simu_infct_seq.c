@@ -44,6 +44,31 @@ double negExp(double inMean)
 {
     return -inMean * log(1 - rand() / (double)RAND_MAX);
 }
+
+void print_Jour(int day, struct agent *world, int nbr_tot_agents, int width_grille, int Higth_grille)
+{
+    int S = 0;
+    int E = 0;
+    int I = 0;
+    int R = 0;
+
+    for (int i = 0; i < nbr_tot_agents; i++)
+    {
+        if (world[i].status == 'S')
+            S++;
+        else if (world[i].status == 'E')
+            E++;
+        else if (world[i].status == 'I')
+        {
+            I++;
+        }
+        else if (world[i].status == 'R')
+            R++;
+    }
+
+    printf("Jour %d //////// S=%d E=%d I=%d R=%d\n", day, S, E, I, R);
+}
+
 int main(int argc, char *argv[])
 {
     // Initialisation du générateur avec une graine
@@ -87,7 +112,7 @@ int main(int argc, char *argv[])
             world[j].y = random_int_between(0, Higth_grille - 1);
         }
 
-        struct agent *world_inf = calloc(sizeof(struct agent), width_grille * width_grille);
+        // struct agent *world_inf = calloc(sizeof(struct agent), width_grille * width_grille);
 
         for (int j = 0; j < nbr_tot_agents; j++)
         {
@@ -107,8 +132,10 @@ int main(int argc, char *argv[])
 
                 for (int k = 0; k < nbr_tot_agents; k++)
                 {
-                    if (&world[j] == &world[k]) continue;
-                    if (world[k].status != 'I') continue;
+                    if (&world[j] == &world[k])
+                        continue;
+                    if (world[k].status != 'I')
+                        continue;
 
                     int xk = world[k].x;
                     int yk = world[k].y;
@@ -125,15 +152,30 @@ int main(int argc, char *argv[])
                 if (Ni > 0)
                 {
                     double p = 1.0 - exp(-0.5 * Ni);
-                    double u = random_between(0.0, 1.0);
-                    if (u < p)
+                    double rand_between = random_between(0.0, 1.0);
+                    if (rand_between < p)
                     {
                         set_status(&world[j], 'E');
                     }
                 }
             }
         }
+
+        for (int j = 0; j < nbr_tot_agents; j++)
+        {
+            world[j].time_in_status++;
+            if (world[j].status == 'E' && world[j].time_in_status > world[j].dE)
+                set_status(&world[j], 'I');
+            else if (world[j].status == 'I' && world[j].time_in_status > world[j].dI)
+                set_status(&world[j], 'R');
+            else if (world[j].status == 'R' && world[j].time_in_status > world[j].dR)
+                set_status(&world[j], 'S');
+        }
+
+        print_Jour(i + 1, world, nbr_tot_agents, width_grille, Higth_grille);
     }
+
+    free(world);
 
     return 0;
 }
