@@ -71,8 +71,15 @@ void print_Jour(int day, struct agent *world, int nbr_tot_agents, int width_gril
 
 int main(int argc, char *argv[])
 {
+
+    int rank;
+    int size;
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
     // Initialisation du générateur avec une graine
-    srand(2002);
+    srand(rank + 2002);
     // const du model
     int nbr_tot_agents = 20000;
     int width_grille = 300;
@@ -82,7 +89,16 @@ int main(int argc, char *argv[])
     int param_dE = 3;
     int param_dI = 7;
     int param_dR = 365;
-    int time = 250;
+    int time = 25;
+
+    // ajout vars mpi
+    struct agent *world_inf_local = calloc(sizeof(struct agent), width_grille * width_grille);
+    int nbr_agent_rank = nbr_tot_agents/ size;
+    int nbr_rest_agent = nbr_tot_agents % size;
+    int local_n = nbr_agent_rank + (rank < nbr_rest_agent ? 1 : 0);
+    int start = rank * nbr_agent_rank + (rank < nbr_rest_agent ? rank : nbr_rest_agent);
+    int end = start + local_n;
+
 
     // step2: init le monde
     struct agent *world = malloc(nbr_tot_agents * sizeof(struct agent));
