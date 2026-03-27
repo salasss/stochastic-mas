@@ -92,17 +92,20 @@ int main(int argc, char *argv[])
     int time = 25;
 
     // ajout vars mpi
-    struct agent *world_inf_local = calloc(sizeof(struct agent), width_grille * width_grille);
-    int nbr_agent_rank = nbr_tot_agents/ size;
+    int nbr_agent_rank = nbr_tot_agents / size;
     int nbr_rest_agent = nbr_tot_agents % size;
     int local_n = nbr_agent_rank + (rank < nbr_rest_agent ? 1 : 0);
     int start = rank * nbr_agent_rank + (rank < nbr_rest_agent ? rank : nbr_rest_agent);
     int end = start + local_n;
+    int grid_size = width_grille * Higth_grille;
+
+    int *local_inf = calloc(grid_size, sizeof(int));
+    int *global_inf = calloc(grid_size, sizeof(int));
 
 
     // step2: init le monde
     struct agent *world = malloc(nbr_tot_agents * sizeof(struct agent));
-    for (int i = 0; i < nbr_tot_agents; i++)
+    for (int i = start; i < end; i++)
     {
         if (i < init_nbr_S)
         {
@@ -127,8 +130,20 @@ int main(int argc, char *argv[])
             world[j].x = random_int_between(0, width_grille - 1);
             world[j].y = random_int_between(0, Higth_grille - 1);
         }
-
-        // struct agent *world_inf = calloc(sizeof(struct agent), width_grille * width_grille);
+        //step5:remettre a 0 puis clc les i
+        for (int idx = 0; idx < grid_size; idx++)
+        {
+            local_inf[idx] = 0;
+        }
+        for (int j = start; j < end; j++)
+        {
+            if (world[j].status == 'I')
+            {
+                int idx = world[j].y * width_grille + world[j].x;
+                local_inf[idx]++;
+            }
+        }
+        MPI_Allreduce(local_inf, global_inf, grid_size, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
 
         for (int j = start; j < end; j++)
         {
@@ -146,24 +161,15 @@ int main(int argc, char *argv[])
                 int y_down = (y0 - 1 + Higth_grille) % Higth_grille;
                 int y_up = (y0 + 1) % Higth_grille;
 
-                for (int k = start; k < end; k++)
-                {
-                    if (&world[j] == &world[k])
-                        continue;
-                    if (world[k].status != 'I')
-                        continue;
-
-                    int xk = world[k].x;
-                    int yk = world[k].y;
-
-                    int voisin_x = (xk == x0) || (xk == x_left) || (xk == x_right);
-                    int voisin_y = (yk == y0) || (yk == y_down) || (yk == y_up);
-
-                    if (voisin_x && voisin_y)
-                    {
-                        Ni++;
-                    }
-                }
+                Ni += global_inf[y0 * width_grille + x0];
+                Ni += global_inf[y0 * width_grille + x_left];
+                Ni += global_inf[y0 * width_grille + x_right];
+                Ni += global_inf[y_down * width_grille + x0];
+                Ni += global_inf[y_down * width_grille + x_left];
+                Ni += global_inf[y_down * width_grille + x_right];
+                Ni += global_inf[y_up * width_grille + x0];
+                Ni += global_inf[y_up * width_grille + x_left];
+                Ni += global_inf[y_up * width_grille + x_right];
 
                 if (Ni > 0)
                 {
@@ -188,10 +194,37 @@ int main(int argc, char *argv[])
                 set_status(&world[j], 'S');
         }
 
-        print_Jour(i + 1, world, nbr_tot_agents, width_grille, Higth_grille);
+        int local_S = 0;
+        int local_E = 0;
+        int local_I = 0;
+        int local_R = 0;
+        for (int j = start; j < end; j++)
+        {
+            if (world[j].status == 'S') local_S++;
+            else if (world[j].status == 'E') local_E++;
+            else if (world[j].status == 'I') local_I++;
+            else if (world[j].status == 'R') local_R++;
+        }
+
+        int global_S = 0;
+        int global_E = 0;
+        int global_I = 0;
+        int global_R = 0;
+        MPI_Reduce(&local_S, &global_S, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+        MPI_Reduce(&local_E, &global_E, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+        MPI_Reduce(&local_I, &global_I, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+        MPI_Reduce(&local_R, &global_R, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+
+        if (rank == 0)
+        {
+            printf("Jour %d //////// S=%d E=%d I=%d R=%d\n", i + 1, global_S, global_E, global_I, global_R);
+        }
     }
 
+    free(local_inf);
+    free(global_inf);
     free(world);
+    MPI_Finalize();
 
     return 0;
 }
