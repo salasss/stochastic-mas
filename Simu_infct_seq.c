@@ -1,6 +1,6 @@
 #include <mpi.h>
 #include <stdio.h>
-#include <math.h>
+    #include <math.h>
 #include <stdlib.h>
 
 // 1st etape: def le struct

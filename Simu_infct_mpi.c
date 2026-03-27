@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     // step3:deplacement et time
     for (int i = 0; i < time; i++)
     {
-        for (int j = 0; j < nbr_tot_agents; j++)
+        for (int j = start; j < end; j++)
         {
             world[j].x = random_int_between(0, width_grille - 1);
             world[j].y = random_int_between(0, Higth_grille - 1);
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 
         // struct agent *world_inf = calloc(sizeof(struct agent), width_grille * width_grille);
 
-        for (int j = 0; j < nbr_tot_agents; j++)
+        for (int j = start; j < end; j++)
         {
             int agent_x = world[j].x;
             int agent_y = world[j].y;
@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
                 int y_down = (y0 - 1 + Higth_grille) % Higth_grille;
                 int y_up = (y0 + 1) % Higth_grille;
 
-                for (int k = 0; k < nbr_tot_agents; k++)
+                for (int k = start; k < end; k++)
                 {
                     if (&world[j] == &world[k])
                         continue;
@@ -177,7 +177,7 @@ int main(int argc, char *argv[])
             }
         }
 
-        for (int j = 0; j < nbr_tot_agents; j++)
+        for (int j = start; j < end; j++)
         {
             world[j].time_in_status++;
             if (world[j].status == 'E' && world[j].time_in_status > world[j].dE)
