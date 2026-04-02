@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     int param_dE = 3;
     int param_dI = 7;
     int param_dR = 365;
-    int time = 25;
+    int time = 2500;
 
     // ajout vars mpi
     int nbr_agent_rank = nbr_tot_agents / size;
