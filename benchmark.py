@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 # Réglages simples
 # --------------------
 PROJECT_DIR = Path(".")
-NP_LIST = [1, 2, 4, 8]
+NP_LIST = [1, 2, 4, 8, 16]
 REPEATS = 2
 OUTPUT_DIR = PROJECT_DIR / "bench_out"
 
