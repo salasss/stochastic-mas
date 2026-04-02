@@ -81,11 +81,11 @@ int main(int argc, char *argv[])
     // Initialisation du générateur avec une graine
     srand(rank + 2002);
     // const du model
-    int nbr_tot_agents = 20000;
+    int nbr_tot_agents = 200000;
     int width_grille = 300;
     int Higth_grille = 300;
-    int init_nbr_S = 19980;
-    int init_nbr_I = 20;
+    int init_nbr_S = 199800;
+    int init_nbr_I = 200;
     int param_dE = 3;
     int param_dI = 7;
     int param_dR = 365;

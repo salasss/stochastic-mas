@@ -74,15 +74,18 @@ int main(int argc, char *argv[])
     // Initialisation du générateur avec une graine
     srand(2002);
     // const du model
-    int nbr_tot_agents = 20000;
+    int nbr_tot_agents = 200000;
     int width_grille = 300;
     int Higth_grille = 300;
-    int init_nbr_S = 19980;
-    int init_nbr_I = 20;
+    int init_nbr_S = 199800;
+    int init_nbr_I = 200;
     int param_dE = 3;
     int param_dI = 7;
     int param_dR = 365;
-    int time = 250;
+    int time = 2500;
+
+    int grid_size = width_grille * Higth_grille;
+    int *global_inf = calloc(grid_size, sizeof(int));
 
     // step2: init le monde
     struct agent *world = malloc(nbr_tot_agents * sizeof(struct agent));
@@ -112,7 +115,19 @@ int main(int argc, char *argv[])
             world[j].y = random_int_between(0, Higth_grille - 1);
         }
 
-        // struct agent *world_inf = calloc(sizeof(struct agent), width_grille * width_grille);
+        /// OPTIMISATION
+for (int idx = 0; idx < grid_size; idx++)
+{
+global_inf[idx] = 0;
+}
+for (int j = 0; j < nbr_tot_agents; j++)
+{
+if (world[j].status == 'I')
+{
+int idx = world[j].y * width_grille + world[j].x;
+global_inf[idx]++;
+}
+}
 
         for (int j = 0; j < nbr_tot_agents; j++)
         {
@@ -130,24 +145,15 @@ int main(int argc, char *argv[])
                 int y_down = (y0 - 1 + Higth_grille) % Higth_grille;
                 int y_up = (y0 + 1) % Higth_grille;
 
-                for (int k = 0; k < nbr_tot_agents; k++)
-                {
-                    if (&world[j] == &world[k])
-                        continue;
-                    if (world[k].status != 'I')
-                        continue;
-
-                    int xk = world[k].x;
-                    int yk = world[k].y;
-
-                    int voisin_x = (xk == x0) || (xk == x_left) || (xk == x_right);
-                    int voisin_y = (yk == y0) || (yk == y_down) || (yk == y_up);
-
-                    if (voisin_x && voisin_y)
-                    {
-                        Ni++;
-                    }
-                }
+                Ni += global_inf[y0 * width_grille + x0];
+                Ni += global_inf[y0 * width_grille + x_left];
+                Ni += global_inf[y0 * width_grille + x_right];
+                Ni += global_inf[y_down * width_grille + x0];
+                Ni += global_inf[y_down * width_grille + x_left];
+                Ni += global_inf[y_down * width_grille + x_right];
+                Ni += global_inf[y_up * width_grille + x0];
+                Ni += global_inf[y_up * width_grille + x_left];
+                Ni += global_inf[y_up * width_grille + x_right];
 
                 if (Ni > 0)
                 {
