@@ -50,7 +50,7 @@ def main():
     mpi_means = []
     mpi_stds = []
     for np_val in NP_LIST:
-        times = [run_and_time(["mpirun", "-np", str(np_val), "./sim_mpi"]) for _ in range(REPEATS)]
+        times = [run_and_time(["mpirun", "--oversubscribe", "-np", str(np_val), "./sim_mpi"]) for _ in range(REPEATS)]
         m, s = mean_std(times)
         mpi_means.append(m)
         mpi_stds.append(s)
