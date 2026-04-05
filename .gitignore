@@ -1,21 +1,20 @@
-# Compiled files
+# C binaries
+sim_seq
+sim_mpi
+sim_mpi_repro
 *.o
-*.so
-*.a
-*.exe
-
-# Build directories
-build/
-bin/
-dist/
-
-# IDE
-.vscode/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Output files
 *.out
 
+# Python
+.venv/
+__pycache__/
+
+# Output folders
+bench_out/
+bench_out_states/
+
+# Others
+.vscode/
+.DS_Store
+*.csv
+*.png

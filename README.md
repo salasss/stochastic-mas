@@ -1,27 +1,33 @@
-# stochastic-mas
+# Simulation SEIR MPI
 
-## Benchmark auto (seq + MPI + speedup + plots)
+Simulation multi-agents d'une pandémie (Modèle SEIR) en C, avec parallélisation MPI et version séquentielle optimisée.
 
-Script: `benchmark.py`
+## Prérequis
+- OpenMPI (`mpicc`, `mpirun`)
+- Python 3 + pip
+- Matplotlib (pour la génération des courbes)
 
-### Prérequis
-- `mpicc` + `mpirun` (OpenMPI)
-- Python 3
-- Optionnel pour les graphes: `matplotlib`
-
-### Lancer en local
+## Installation (Environnement)
 ```bash
-python3 benchmark.py --np 1,2,4,8 --repeats 3 --output-dir bench_out
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-### Résultats
-- CSV: `bench_out/benchmark_results.csv`
-- Graphes: `bench_out/runtime_vs_np.png` et `bench_out/speedup_vs_np.png`
+## Utilisation (Scripts Python)
 
-### Sur GCP (VM)
+**1. Générer les courbes épidémiques S/E/I/R (200 000 agents)**
 ```bash
-sudo apt update
-sudo apt install -y build-essential openmpi-bin libopenmpi-dev python3 python3-pip
-pip3 install matplotlib
-python3 benchmark.py --np 1,2,4,8,16 --repeats 3 --output-dir bench_out
+python plot_states.py
+```
+*(Les graphiques `states_*.png` seront dans `bench_out_states/`)*
+
+**2. Lancer le Benchmark de performances (Temps / Speedup)**
+```bash
+python benchmark.py --np 1,2,4,8,16 --repeats 3 --output-dir bench_out
+```
+
+**3. Valider la reproductibilité (Seed aléatoire)**
+```bash
+python check_repro.py
 ```
