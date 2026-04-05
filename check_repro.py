@@ -2,7 +2,7 @@
 import subprocess
 
 def run_simulation(np):
-    cmd = ["mpirun", "-np", str(np), "./sim_mpi"]
+    cmd = ["mpirun", "-np", str(np), "./sim_mpi_repro"]
     result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
     
     # recup dernière ligne
@@ -10,7 +10,7 @@ def run_simulation(np):
     return last_line
 
 print("Compil///////")
-subprocess.run(["mpicc", "Simu_infct_mpi.c", "-O2", "-lm", "-o", "sim_mpi"])
+subprocess.run(["mpicc", "Simu_infct_mpi_repro.c", "-O2", "-lm", "-o", "sim_mpi_repro"])
 
 print("\n--- TEST DE REPRODUCTIBILITÉ SELON LES CŒURS ---")
 print("relance exactement la même simulation, avec la même seed\n")
